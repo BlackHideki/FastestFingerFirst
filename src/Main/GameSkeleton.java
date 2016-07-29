@@ -27,25 +27,6 @@ public class GameSkeleton extends JFrame {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		if (isMac()) {
-			System.out.println("Mac");
-            // JFrameにメニューをつけるのではなく、一般的なOSXアプリ同様に画面上端のスクリーンメニューにする.
-            System.setProperty("apple.laf.useScreenMenuBar", "true");
-
-            // スクリーンメニュー左端に表記されるアプリケーション名を設定する
-            // (何も設定しないとクラス名になる。)
-            System.setProperty("com.apple.mrj.application.apple.menu.about.name","MacJavaSample");
-        }else{
-        	System.out.println("macじゃない");
-        }
-
 		GameSkeleton gs = new GameSkeleton("タイピングゲーム");
 	}
-
-    protected static boolean isMac() {
-        // MacOSXで動作しているか?
-        String lcOSName = System.getProperty("os.name").toLowerCase();
-        return lcOSName.startsWith("mac os x");
-    }
-
 }

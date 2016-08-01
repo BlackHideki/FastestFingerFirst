@@ -245,11 +245,11 @@ public class Game {
 
 			g.drawImage(rankingTwo.getImage(), GameStart.WINDOW_WIDTH / 2 - rankingLogo.getSize().width + 15, GameStart.WINDOW_HEIGHT / 8 + rankingLogo.getSize().height + rankingOne.getSize().height + 20, null);
 			g.setFont(new Font("メイリオ", Font.BOLD, 60));
-			g.drawString(ranking.getText().get(1), GameStart.WINDOW_WIDTH / 2 - rankingLogo.getSize().width / 2 + 90, GameStart.WINDOW_HEIGHT / 4 + rankingLogo.getSize().height + 110);
+			g.drawString(ranking.getText().get(1), GameStart.WINDOW_WIDTH / 2 - rankingLogo.getSize().width / 2 + 92, GameStart.WINDOW_HEIGHT / 4 + rankingLogo.getSize().height + 110);
 
 			g.drawImage(rankingThree.getImage(), GameStart.WINDOW_WIDTH / 2 - rankingLogo.getSize().width + 25, GameStart.WINDOW_HEIGHT / 8 + rankingLogo.getSize().height + rankingOne.getSize().height + rankingTwo.getSize().height + 40, null);
 			g.setFont(new Font("メイリオ", Font.BOLD, 40));
-			g.drawString(ranking.getText().get(2), GameStart.WINDOW_WIDTH / 2 - rankingLogo.getSize().width / 2 + 95, GameStart.WINDOW_HEIGHT / 4 + rankingLogo.getSize().height + 180);
+			g.drawString(ranking.getText().get(2), GameStart.WINDOW_WIDTH / 2 - rankingLogo.getSize().width / 2 + 99, GameStart.WINDOW_HEIGHT / 4 + rankingLogo.getSize().height + 180);
 
 			g.drawImage(menuBack.getImage(), GameStart.WINDOW_WIDTH - menuBack.getSize().width - 20, GameStart.WINDOW_HEIGHT - menuBack.getSize().height * 2, null);
 			g.drawImage(cursor.getImage(), GameStart.WINDOW_WIDTH - menuBack.getSize().width - 80, GameStart.WINDOW_HEIGHT - menuBack.getSize().height * 2, null);

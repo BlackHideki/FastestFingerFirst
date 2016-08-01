@@ -1,12 +1,13 @@
-package Main;
+package ready;
 
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Point;
 
 import javax.swing.JPanel;
 
-import Ready.KeyBoard;
+import main.Game;
 
 /**
  * GameSkeleton
@@ -15,7 +16,7 @@ import Ready.KeyBoard;
  * @since 2016/07/30
  * @version 1.0
  */
-public class GameSkeleton extends JPanel implements Runnable{
+public class GameSkeleton extends JPanel implements Runnable {
 
 	/**
 	 * ウィンドウのサイズ
@@ -23,14 +24,14 @@ public class GameSkeleton extends JPanel implements Runnable{
 	private Dimension windowSize;
 
 	/**
-	 *
-	 */
-	private KeyBoard keyboard;
-
-	/**
 	 * スレッド
 	 */
 	private Thread thread;
+
+	/**
+	 * ゲーム
+	 */
+	private Game game;
 
 	/**
 	 * <p>コンストラクタ<br>
@@ -41,6 +42,8 @@ public class GameSkeleton extends JPanel implements Runnable{
 	public GameSkeleton(int width, int height) {
 		windowSize = new Dimension(width, height);
 		setSize(windowSize.width, windowSize.height);
+		setBackground(Color.WHITE);
+		game = new Game();
 
 	    thread = null;
 	}
@@ -65,18 +68,50 @@ public class GameSkeleton extends JPanel implements Runnable{
 	 */
 	public void run() {
 		while(true){
+			action();
 			repaint();
 			try{
-				Thread.sleep(1 / 60 * 1000);
+				Thread.sleep(1000/60);
 			}catch(InterruptedException e){
-			    e.printStackTrace();
+				e.printStackTrace();
 			}
 		}
 	}
 
+	/**
+	 * 処理
+	 */
+	public void action(){
+		game.action();
+	}
+
+	/**
+	 * グラフィックを描画
+	 */
 	public void paintComponent(Graphics g){
 		super.paintComponent(g);
-		g.setColor(Color.BLACK);
-		g.drawString("adwkdoawdia", windowSize.width / 2, windowSize.height / 2);
+		game.draw(g);
+	}
+
+	/**
+	 * キーが押された時に呼び出される
+	 * @param key 押されたキーの種類
+	 */
+	public void keyPressed(int key) {
+		game.keyPressed(key);
+	}
+
+	/**
+	 * キーが離された時に呼び出される
+	 */
+	public void keyReleased() {
+		game.keyReleased();
+	}
+
+	/**
+	 * マウスがクリックした時に呼び出される
+	 */
+	public void mouseClick(Point p) {
+		game.mouseClick(p);
 	}
 }

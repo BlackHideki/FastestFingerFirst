@@ -35,6 +35,8 @@ public class Game {
 	private ImageFileReader titleLogo;
 	private ImageFileReader menuStart;
 	private ImageFileReader menuRanking;
+	private ImageFileReader menuRule;
+	private ImageFileReader rule;
 	private ImageFileReader cursor;
 	private ImageFileReader rankingBg;
 	private ImageFileReader rankingLogo;
@@ -99,12 +101,14 @@ public class Game {
 		titleLogo = new ImageFileReader("images/title_logo.png");
 		menuStart = new ImageFileReader("images/menu_start.png", 120, 55);
 		menuRanking = new ImageFileReader("images/menu_ranking.png", 165, 55);
+		menuRule = new ImageFileReader("images/menu_rule.png", 90, 55);
 		cursor = new ImageFileReader("images/cursor.png", 55, 55);
 		rankingBg = new ImageFileReader("images/ranking_bg.png");
 		rankingLogo = new ImageFileReader("images/menu_ranking.png");
 		rankingOne = new ImageFileReader("images/ranking_one.png", 100, 100);
 		rankingTwo = new ImageFileReader("images/ranking_two.png", 70, 70);
 		rankingThree = new ImageFileReader("images/ranking_three.png", 50, 50);
+		rule = new ImageFileReader("images/rule.png");
 		menuBack = new ImageFileReader("images/menu_back.png", 101, 55);
 		gameImages1 = new ImageFileReader[3];
 		gameImages2 = new ImageFileReader[3];
@@ -117,9 +121,10 @@ public class Game {
 		startForEnter = new ImageFileReader("images/start_for_enter.png");
 		gameOverImage = new ImageFileReader("images/game_over.png", 800, 600);
 
-		cursorPoint = new Point[2];
+		cursorPoint = new Point[3];
 		cursorPoint[0] = new Point(GameStart.WINDOW_WIDTH / 2 - menuStart.getSize().width, GameStart.WINDOW_HEIGHT / 2);
 		cursorPoint[1] = new Point(GameStart.WINDOW_WIDTH / 2 - menuRanking.getSize().width, GameStart.WINDOW_HEIGHT / 2 + menuStart.getSize().height);
+		cursorPoint[2] = new Point(GameStart.WINDOW_WIDTH / 2 - menuRule.getSize().width, GameStart.WINDOW_HEIGHT / 2 + menuStart.getSize().height * 2);
 		gameImagesPoint1 = new Point(GameStart.WINDOW_WIDTH / 2 - gameImages1[0].getSize().width / 2, GameStart.WINDOW_HEIGHT / 6);
 		gameImagesPoint2 = new Point[gameImages2.length];
 		gameImagesPoint2[0] = new Point(GameStart.WINDOW_WIDTH / 4 * 1 - gameImages2[0].getSize().width / 2, GameStart.WINDOW_HEIGHT / 2);
@@ -207,6 +212,7 @@ public class Game {
 			g.drawImage(titleLogo.getImage(), GameStart.WINDOW_WIDTH / 2 - titleLogo.getSize().width / 2, GameStart.WINDOW_HEIGHT / 8, null);
 			g.drawImage(menuStart.getImage(), GameStart.WINDOW_WIDTH / 2 - menuStart.getSize().width / 2, GameStart.WINDOW_HEIGHT / 2, null);
 			g.drawImage(menuRanking.getImage(), GameStart.WINDOW_WIDTH / 2 - menuRanking.getSize().width / 2, GameStart.WINDOW_HEIGHT / 2 + menuStart.getSize().height, null);
+			g.drawImage(menuRule.getImage(), GameStart.WINDOW_WIDTH / 2 - menuRule.getSize().width / 2, GameStart.WINDOW_HEIGHT / 2 + menuStart.getSize().height * 2, null);
 			g.drawImage(cursor.getImage(), cursor.getPosition().x, cursor.getPosition().y, null);
 			break;
 
@@ -262,6 +268,12 @@ public class Game {
 			g.drawImage(menuBack.getImage(), GameStart.WINDOW_WIDTH - menuBack.getSize().width - 20, GameStart.WINDOW_HEIGHT - menuBack.getSize().height * 2, null);
 			g.drawImage(cursor.getImage(), GameStart.WINDOW_WIDTH - menuBack.getSize().width - 80, GameStart.WINDOW_HEIGHT - menuBack.getSize().height * 2, null);
 			break;
+
+		case 4:
+			g.drawImage(rule.getImage(), 0, 0, null);
+			g.drawImage(menuBack.getImage(), GameStart.WINDOW_WIDTH - menuBack.getSize().width - 20, GameStart.WINDOW_HEIGHT - menuBack.getSize().height * 2, null);
+			g.drawImage(cursor.getImage(), GameStart.WINDOW_WIDTH - menuBack.getSize().width - 80, GameStart.WINDOW_HEIGHT - menuBack.getSize().height * 2, null);
+			break;
 		}
 	}
 
@@ -275,11 +287,19 @@ public class Game {
 		case 0:
 			switch(key){
 			case 38:
-				cursor.setPosition(cursorPoint[0]);
+				if(cursor.getPosition().equals(cursorPoint[2])){
+					cursor.setPosition(cursorPoint[1]);
+				}else if(cursor.getPosition().equals(cursorPoint[1])){
+					cursor.setPosition(cursorPoint[0]);
+				}
 				break;
 
 			case 40:
-				cursor.setPosition(cursorPoint[1]);
+				if(cursor.getPosition().equals(cursorPoint[0])){
+					cursor.setPosition(cursorPoint[1]);
+				}else if(cursor.getPosition().equals(cursorPoint[1])){
+					cursor.setPosition(cursorPoint[2]);
+				}
 				break;
 
 			case 10:
@@ -287,8 +307,10 @@ public class Game {
 					init();
 					gameFlag = 0;
 					sceneFlag = 1;
-				}else{
+				}else if(cursor.getPosition().equals(cursorPoint[1])){
 					sceneFlag = 3;
+				}else{
+					sceneFlag = 4;
 				}
 				break;
 			}
@@ -432,6 +454,13 @@ public class Game {
 			break;
 
 		case 3:
+			if(key == 10){
+				cursor.setPosition(cursorPoint[0]);
+				sceneFlag = 0;
+			}
+			break;
+
+		case 4:
 			if(key == 10){
 				cursor.setPosition(cursorPoint[0]);
 				sceneFlag = 0;

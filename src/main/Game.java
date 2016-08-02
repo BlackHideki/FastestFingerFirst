@@ -186,7 +186,7 @@ public class Game {
 
 		timer = 10.0f;
 
-		sceneFlag = 1;
+		sceneFlag = 0;
 
 		gameFlag = 0;
 	}

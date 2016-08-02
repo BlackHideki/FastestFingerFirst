@@ -7,6 +7,7 @@ import java.awt.Point;
 import java.util.Arrays;
 import java.util.Random;
 
+import file.AudioFileReader;
 import file.ImageFileReader;
 import file.TextFileReader;
 import ready.GameStart;
@@ -49,10 +50,42 @@ public class Game {
 	private ImageFileReader startForEnter;
 	private ImageFileReader gameOverImage;
 
+	private ImageFileReader[] keyZ;
+	private int keyZIndex;
+	private ImageFileReader[] keyX;
+	private int keyXIndex;
+	private ImageFileReader[] keyC;
+	private int keyCIndex;
+
 	/**
 	 * 現在表示されているイメージ
 	 */
 	private int currentImage;
+
+	/**
+	 * タイトルＢＧＭ
+	 */
+	private AudioFileReader titleBGM;
+
+	/**
+	 * メインＢＧＭ
+	 */
+	private AudioFileReader mainBGM;
+
+	/**
+	 * ゲームオーバーＢＧＭ
+	 */
+	private AudioFileReader gameOverBGM;
+
+	/**
+	 * カーソル移動音
+	 */
+	private AudioFileReader cursorMoveSE;
+
+	/**
+	 * 決定音
+	 */
+	private AudioFileReader dicideSE;
 
 	/**
 	 * 表示座標
@@ -120,6 +153,16 @@ public class Game {
 		}
 		startForEnter = new ImageFileReader("images/start_for_enter.png");
 		gameOverImage = new ImageFileReader("images/game_over.png", 800, 600);
+		keyZ = new ImageFileReader[]{ new ImageFileReader("images/key_z.png", 100, 100), new ImageFileReader("images/key_z_push.png", 100, 100)};
+		keyX = new ImageFileReader[]{ new ImageFileReader("images/key_x.png", 100, 100), new ImageFileReader("images/key_x_push.png", 100, 100)};
+		keyC = new ImageFileReader[]{ new ImageFileReader("images/key_c.png", 100, 100), new ImageFileReader("images/key_c_push.png", 100, 100)};
+
+		titleBGM = new AudioFileReader("sound/title_bgm.wav");
+		mainBGM = new AudioFileReader("sound/main_bgm.wav");
+		gameOverBGM = new AudioFileReader("sound/game_over_bgm.wav");
+		cursorMoveSE = new AudioFileReader("sound/cursor.wav");
+		dicideSE = new AudioFileReader("sound/dicide.wav");
+		titleBGM.loop();
 
 		cursorPoint = new Point[3];
 		cursorPoint[0] = new Point(GameStart.WINDOW_WIDTH / 2 - menuStart.getSize().width, GameStart.WINDOW_HEIGHT / 2);
@@ -135,20 +178,30 @@ public class Game {
 		currentImage = random.nextInt(3);
 		randomSetPosition();
 
+		keyZIndex = 0;
+		keyXIndex = 0;
+		keyCIndex = 0;
+
 		currentScore = 0;
 
 		timer = 10.0f;
 
-		sceneFlag = 0;
+		sceneFlag = 1;
 
 		gameFlag = 0;
 	}
 
+	/**
+	 * メインゲームの初期化
+	 */
 	public void init(){
 		currentImage = random.nextInt(3);
 		randomSetPosition();
 		currentScore = 0;
 		timer = 10.0f;
+		keyZIndex = 0;
+		keyXIndex = 0;
+		keyCIndex = 0;
 	}
 
 	/**
@@ -185,6 +238,9 @@ public class Game {
 						ranking.getText().add(String.valueOf(tmp[i]));
 					}
 					ranking.textWriter(ranking.getText());
+
+					mainBGM.stop();
+					gameOverBGM.loop();
 
 					sceneFlag = 2;
 				}
@@ -225,6 +281,9 @@ public class Game {
 			g.drawImage(gameImages2[1].getImage(), gameImages2[1].getPosition().x, gameImages2[1].getPosition().y, null);
 			g.drawImage(gameImages2[2].getImage(), gameImages2[2].getPosition().x, gameImages2[2].getPosition().y, null);
 
+			g.drawImage(keyZ[keyZIndex].getImage(), gameImagesPoint2[0].x, gameImagesPoint2[0].y + 110, null);
+			g.drawImage(keyX[keyXIndex].getImage(), gameImagesPoint2[1].x, gameImagesPoint2[1].y + 110, null);
+			g.drawImage(keyC[keyCIndex].getImage(), gameImagesPoint2[2].x, gameImagesPoint2[2].y + 110, null);
 			if(gameFlag == 0){
 				g.drawImage(startForEnter.getImage(), gameImagesPoint2[0].x - 40, gameImagesPoint2[0].y, null);
 			}
@@ -284,9 +343,12 @@ public class Game {
 	 */
 	public void keyPressed(int key) {
 		switch(sceneFlag){
+		// タイトル画面
 		case 0:
 			switch(key){
+			// 上キー
 			case 38:
+				cursorMoveSE.play();
 				if(cursor.getPosition().equals(cursorPoint[2])){
 					cursor.setPosition(cursorPoint[1]);
 				}else if(cursor.getPosition().equals(cursorPoint[1])){
@@ -294,7 +356,9 @@ public class Game {
 				}
 				break;
 
+			// 下キー
 			case 40:
+				cursorMoveSE.play();
 				if(cursor.getPosition().equals(cursorPoint[0])){
 					cursor.setPosition(cursorPoint[1]);
 				}else if(cursor.getPosition().equals(cursorPoint[1])){
@@ -302,8 +366,12 @@ public class Game {
 				}
 				break;
 
+			// Enter
 			case 10:
+				dicideSE.play();
 				if(cursor.getPosition().equals(cursorPoint[0])){
+					titleBGM.stop();
+					mainBGM.loop();
 					init();
 					gameFlag = 0;
 					sceneFlag = 1;
@@ -316,8 +384,10 @@ public class Game {
 			}
 			break;
 
+		// ゲームメイン画面
 		case 1:
 			if(key == 10){
+				dicideSE.play();
 				gameFlag = 1;
 			}
 
@@ -327,9 +397,8 @@ public class Game {
 					switch(drawWhereImage(gameImages2[0].getPosition().x)){
 					case 0:
 						if(key == 90){
-							currentImage = random.nextInt(3);
-							randomSetPosition();
-							currentScore++;
+							keyZIndex = 1;
+							addScore();
 						}else{
 							if(currentScore > 0){
 								currentScore--;
@@ -339,9 +408,8 @@ public class Game {
 
 					case 1:
 						if(key == 88){
-							currentImage = random.nextInt(3);
-							randomSetPosition();
-							currentScore++;
+							keyXIndex = 1;
+							addScore();
 						}else{
 							if(currentScore > 0){
 								currentScore--;
@@ -351,9 +419,8 @@ public class Game {
 
 					case 2:
 						if(key == 67){
-							currentImage = random.nextInt(3);
-							randomSetPosition();
-							currentScore++;
+							keyCIndex = 1;
+							addScore();
 						}else{
 							if(currentScore > 0){
 								currentScore--;
@@ -367,9 +434,8 @@ public class Game {
 					switch(drawWhereImage(gameImages2[1].getPosition().x)){
 					case 0:
 						if(key == 90){
-							currentImage = random.nextInt(3);
-							randomSetPosition();
-							currentScore++;
+							keyZIndex = 1;
+							addScore();
 						}else{
 							if(currentScore > 0){
 								currentScore--;
@@ -379,9 +445,8 @@ public class Game {
 
 					case 1:
 						if(key == 88){
-							currentImage = random.nextInt(3);
-							randomSetPosition();
-							currentScore++;
+							keyXIndex = 1;
+							addScore();
 						}else{
 							if(currentScore > 0){
 								currentScore--;
@@ -391,9 +456,8 @@ public class Game {
 
 					case 2:
 						if(key == 67){
-							currentImage = random.nextInt(3);
-							randomSetPosition();
-							currentScore++;
+							keyCIndex = 1;
+							addScore();
 						}else{
 							if(currentScore > 0){
 								currentScore--;
@@ -407,9 +471,8 @@ public class Game {
 					switch(drawWhereImage(gameImages2[2].getPosition().x)){
 					case 0:
 						if(key == 90){
-							currentImage = random.nextInt(3);
-							randomSetPosition();
-							currentScore++;
+							keyZIndex = 1;
+							addScore();
 						}else{
 							if(currentScore > 0){
 								currentScore--;
@@ -419,9 +482,8 @@ public class Game {
 
 					case 1:
 						if(key == 88){
-							currentImage = random.nextInt(3);
-							randomSetPosition();
-							currentScore++;
+							keyXIndex = 1;
+							addScore();
 						}else{
 							if(currentScore > 0){
 								currentScore--;
@@ -431,9 +493,8 @@ public class Game {
 
 					case 2:
 						if(key == 67){
-							currentImage = random.nextInt(3);
-							randomSetPosition();
-							currentScore++;
+							keyCIndex = 1;
+							addScore();
 						}else{
 							if(currentScore > 0){
 								currentScore--;
@@ -446,22 +507,30 @@ public class Game {
 			}
 			break;
 
+		// ゲームオーバー画面
 		case 2:
 			if(key == 10){
+				dicideSE.play();
+				gameOverBGM.stop();
+				titleBGM.loop();
 				cursor.setPosition(cursorPoint[0]);
 				sceneFlag = 0;
 			}
 			break;
 
+		// ランキング画面
 		case 3:
 			if(key == 10){
+				dicideSE.play();
 				cursor.setPosition(cursorPoint[0]);
 				sceneFlag = 0;
 			}
 			break;
 
+		// ルール画面
 		case 4:
 			if(key == 10){
+				dicideSE.play();
 				cursor.setPosition(cursorPoint[0]);
 				sceneFlag = 0;
 			}
@@ -473,6 +542,9 @@ public class Game {
 	 * キーが離された時
 	 */
 	public void keyReleased() {
+		keyZIndex = 0;
+		keyXIndex = 0;
+		keyCIndex = 0;
 	}
 
 	/**
@@ -527,5 +599,18 @@ public class Game {
 			}
 		}
 		return result;
+	}
+
+	/**
+	 * スコアが加算された時の処理
+	 */
+	private void addScore() {
+		int r = random.nextInt(3);
+		while(currentImage == r){
+			r = random.nextInt(3);
+		}
+		currentImage = r;
+		randomSetPosition();
+		currentScore++;
 	}
 }
